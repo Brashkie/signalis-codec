@@ -128,11 +128,7 @@ pub fn encode_fields_js(fields: Vec<FieldInput>) -> Result<Buffer> {
                     .ok_or_else(|| Error::from_reason("bytes field missing 'bytes' value"))?;
                 enc.write_bytes_field(f.field_number, &b);
             }
-            other => {
-                return Err(Error::from_reason(format!(
-                    "unsupported wire type {other}"
-                )))
-            }
+            other => return Err(Error::from_reason(format!("unsupported wire type {other}"))),
         }
     }
     Ok(Buffer::from(enc.finish()))

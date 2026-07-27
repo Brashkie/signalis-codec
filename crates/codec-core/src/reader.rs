@@ -68,9 +68,7 @@ impl<'a> Reader<'a> {
 
             // On the 10th byte only the lowest bit may be set (64 = 9*7 + 1).
             if count == MAX_VARINT_BYTES && byte > 0x01 {
-                return Err(DecodeError::VarintOverflow {
-                    position: self.pos,
-                });
+                return Err(DecodeError::VarintOverflow { position: self.pos });
             }
 
             result |= u64::from(byte & 0x7f) << shift;
@@ -81,9 +79,7 @@ impl<'a> Reader<'a> {
 
             shift += 7;
             if count >= MAX_VARINT_BYTES {
-                return Err(DecodeError::VarintOverflow {
-                    position: self.pos,
-                });
+                return Err(DecodeError::VarintOverflow { position: self.pos });
             }
         }
     }

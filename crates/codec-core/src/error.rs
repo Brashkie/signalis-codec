@@ -32,7 +32,10 @@ impl fmt::Display for DecodeError {
                 "unexpected end of buffer: needed {needed} more byte(s) at position {position}"
             ),
             DecodeError::VarintOverflow { position } => {
-                write!(f, "varint overflow (exceeds 64 bits) at position {position}")
+                write!(
+                    f,
+                    "varint overflow (exceeds 64 bits) at position {position}"
+                )
             }
             DecodeError::LengthOverflow { position } => {
                 write!(f, "length-delimited size overflow at position {position}")
