@@ -7,6 +7,9 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   target: 'node18',
+  // Inject cross-format shims: `import.meta.url` in the CJS output (needed by
+  // createRequire) and `__dirname`/`__filename` in the ESM output.
+  shims: true,
   // The native addon (index.js) is required at runtime, not bundled.
   external: ['../index.js'],
 });

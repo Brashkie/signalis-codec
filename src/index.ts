@@ -12,8 +12,26 @@
  * @packageDocumentation
  */
 
-// The native addon is produced by NAPI at build time (index.js / index.d.ts).
-import * as native from '../index.js';
+import { createRequire } from 'node:module';
+
+/**
+ * The shape of the native NAPI addon (produced by `napi build` at the package
+ * root). We declare it here so the type-declaration build never depends on the
+ * generated `index.d.ts` existing — the addon is loaded at runtime instead.
+ */
+interface NativeBinding {
+  decodeFieldsJs(buf: Buffer): DecodedField[];
+  encodeFieldsJs(fields: FieldInput[]): Buffer;
+  decodeTreeJs(buf: Buffer, maxDepth: number): TreeNode[];
+  zigzagEncode(value: bigint): bigint;
+  zigzagDecode(value: bigint): bigint;
+}
+
+// `createRequire(import.meta.url)` resolves the addon relative to the built
+// file (dist/index.* → ../index.js at the package root) and works in both the
+// CommonJS and ESM outputs. esbuild polyfills `import.meta.url` for the CJS
+// build, so a single source serves both formats.
+const native = createRequire(import.meta.url)('../index.js') as NativeBinding;
 
 /**
  * Protobuf wire types.
@@ -84,7 +102,7 @@ export const DEFAULT_MAX_DEPTH = 100;
  */
 export function decodeFields(buf: Buffer | Uint8Array): DecodedField[] {
   const input = Buffer.isBuffer(buf) ? buf : Buffer.from(buf);
-  return native.decodeFieldsJs(input) as DecodedField[];
+  return native.decodeFieldsJs(input);
 }
 
 /**
@@ -101,7 +119,7 @@ export function encodeFields(fields: FieldInput[]): Buffer {
         : Buffer.from(f.bytes)
       : undefined,
   }));
-  return native.encodeFieldsJs(normalized) as Buffer;
+  return native.encodeFieldsJs(normalized);
 }
 
 /**
@@ -120,17 +138,17 @@ export function decodeTree(
   maxDepth: number = DEFAULT_MAX_DEPTH,
 ): TreeNode[] {
   const input = Buffer.isBuffer(buf) ? buf : Buffer.from(buf);
-  return native.decodeTreeJs(input, maxDepth) as TreeNode[];
+  return native.decodeTreeJs(input, maxDepth);
 }
 
 /** ZigZag-encode a signed integer (for `sint32` / `sint64`). */
 export function zigzagEncode(value: bigint): bigint {
-  return native.zigzagEncode(value) as bigint;
+  return native.zigzagEncode(value);
 }
 
 /** ZigZag-decode back to a signed integer. */
 export function zigzagDecode(value: bigint): bigint {
-  return native.zigzagDecode(value) as bigint;
+  return native.zigzagDecode(value);
 }
 
 /** Build the field key (tag) varint for a field number + wire type. */
