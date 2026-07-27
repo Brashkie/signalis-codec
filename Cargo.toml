@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/codec-core",
+    "crates/codec-node",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+authors = ["Brashkie (Hepein)"]
+license = "Apache-2.0"
+repository = "https://github.com/Brashkie/signalis-codec"
+homepage = "https://github.com/Brashkie/signalis-codec"
+keywords = ["protobuf", "codec", "wire-format", "serialization", "rust"]
+categories = ["encoding", "parsing"]
+
+[workspace.dependencies]
+codec-core = { path = "crates/codec-core" }
+
+# NAPI — pinned to the same versions proven to build in signalis-core.
+napi = { version = "2.16", default-features = false, features = ["napi9"] }
+napi-derive = "2.16"
+napi-build = "=2.1.3"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

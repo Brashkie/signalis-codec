@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Rust / NAPI build artifacts
+target/
+*.node
+index.js
+index.d.ts
+npm/

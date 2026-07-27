@@ -1,0 +1,91 @@
+{
+  "name": "@brashkie/signalis-codec",
+  "version": "0.1.0",
+  "description": "Safe, Rust-powered protobuf wire codec (Level 1) with bounds-checking and depth limiting. Schema-agnostic foundation for @brashkie/waproto.",
+  "author": "Brashkie (Hepein Oficial)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Brashkie/signalis-codec.git"
+  },
+  "homepage": "https://github.com/Brashkie/signalis-codec",
+  "bugs": {
+    "url": "https://github.com/Brashkie/signalis-codec/issues"
+  },
+  "keywords": [
+    "protobuf",
+    "protocol-buffers",
+    "codec",
+    "wire-format",
+    "serialization",
+    "napi",
+    "rust",
+    "signalis",
+    "waproto"
+  ],
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "index.js",
+    "index.d.ts",
+    "*.node",
+    "npm",
+    "README.md",
+    "LICENSE"
+  ],
+  "napi": {
+    "name": "signalis-codec",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "aarch64-apple-darwin",
+        "aarch64-linux-android",
+        "aarch64-unknown-linux-gnu",
+        "aarch64-unknown-linux-musl",
+        "aarch64-pc-windows-msvc",
+        "armv7-unknown-linux-gnueabihf",
+        "x86_64-unknown-linux-musl",
+        "x86_64-unknown-freebsd"
+      ]
+    }
+  },
+  "scripts": {
+    "build:native": "napi build --platform --release --cargo-cwd crates/codec-node --js index.js --dts index.d.ts",
+    "build:native:debug": "napi build --platform --cargo-cwd crates/codec-node --js index.js --dts index.d.ts",
+    "build:ts": "tsup",
+    "build": "npm run build:native && npm run build:ts",
+    "build:debug": "npm run build:native:debug && npm run build:ts",
+    "artifacts": "napi artifacts",
+    "prepublishOnly": "napi prepublish -t npm",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src __tests__",
+    "lint:fix": "biome check --write src __tests__",
+    "format": "biome format --write src __tests__",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:rust": "cargo test --workspace --exclude codec-node"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "@napi-rs/cli": "^2.18.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

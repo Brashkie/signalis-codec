@@ -1,0 +1,41 @@
+# 🗺️ Roadmap — @brashkie/signalis-codec
+
+Mission: a **safe, fast, auditable** protobuf wire codec — the serialization
+foundation for the Signalis ecosystem and `@brashkie/waproto`.
+
+**Legend:** ✅ done · 🟡 in progress · 🔴 planned · 💭 considering
+
+## ✅ Phase 1 — Wire codec (v0.1.0)
+
+- [x] All four wire types (varint, fixed64, length-delimited, fixed32)
+- [x] Bounds-checked reader, no unsafe, no panics on bad input
+- [x] Depth-limited recursive decode (anti-Proto6)
+- [x] ZigZag for sint32/sint64
+- [x] NAPI bindings + TypeScript wrapper (BigInt for 64-bit)
+
+## 🔴 Phase 2 — Ergonomics
+
+- [ ] Streaming decode (decode fields lazily without materializing a Vec)
+- [ ] `packed` repeated helpers (decode a Bytes field as a varint/fixed array)
+- [ ] Zero-copy string/bytes views where safe
+- [ ] Benchmarks vs protobufjs (throughput + memory)
+
+## 🔴 Phase 3 — Schema awareness (Level 2, optional)
+
+- [ ] A thin descriptor layer: given field→type maps, decode into named objects
+- [ ] Codegen path so `@brashkie/waproto` can generate typed accessors
+- [ ] `.proto` parsing is explicitly **out of scope** for the core codec
+
+## 💭 Considering
+
+- WASM build (browser protobuf) once `signalis-wasm` patterns are established
+- `no_std` mode for embedded targets
+
+## Non-goals
+
+- ❌ Being a full `.proto` compiler — that's a separate concern.
+- ❌ Schema validation beyond wire-format correctness.
+
+---
+
+🔐 + ❤️ Hepein Oficial

@@ -1,0 +1,101 @@
+name: CI
+
+env:
+  DEBUG: napi:*
+  APP_NAME: signalis-codec
+  MACOSX_DEPLOYMENT_TARGET: '10.13'
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**/*.md'
+      - LICENSE
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─── Rust unit tests (fail fast — the codec logic lives here) ────────────
+  rust-test:
+    name: Rust tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+      - name: Format check
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --workspace --exclude codec-node -- -D warnings
+      - name: Run tests (excluding NAPI bindings)
+        run: cargo test --workspace --exclude codec-node --verbose
+
+  # ─── TS quality (lint + typecheck) ──────────────────────────────────────
+  quality:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint (Biome)
+        run: npm run lint
+      # Typecheck needs the generated index.d.ts, so build native first.
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+      - name: Build native (for type declarations)
+        run: npm run build:native
+      - name: Typecheck
+        run: npm run typecheck
+
+  # ─── Build native + run JS tests across OS ──────────────────────────────
+  build-and-test:
+    name: Build & Test — ${{ matrix.os }}
+    needs: [rust-test]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+      - run: npm ci
+      - name: Build native addon
+        run: npm run build:native
+      - name: Build TypeScript
+        run: npm run build:ts
+      - name: Run tests
+        run: npm test
+      - name: Verify package imports (CJS + ESM)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "const m = require('./dist/index.js'); if (typeof m.decodeFields !== 'function') { throw new Error('CJS export missing'); } console.log('CJS OK');"
+          node --input-type=module -e "import('./dist/index.mjs').then(m => { if (typeof m.decodeFields !== 'function') { throw new Error('ESM export missing'); } console.log('ESM OK'); });"

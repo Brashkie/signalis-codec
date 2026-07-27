@@ -1,0 +1,22 @@
+[package]
+name = "codec-node"
+description = "NAPI-RS Node.js bindings for signalis-codec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { workspace = true }
+napi-derive = { workspace = true }
+
+codec-core = { workspace = true }
+
+[build-dependencies]
+napi-build = { workspace = true }
