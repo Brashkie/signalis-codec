@@ -5,6 +5,17 @@ All notable changes to `@brashkie/signalis-codec` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-08-03
+
+### Fixed
+
+- **Packaging: the NAPI loader was missing from the published package.**
+  `index.js` (the platform-selecting loader that `napi build` generates) was
+  listed in `.gitignore` and therefore never committed or published, so
+  `require('@brashkie/signalis-codec')` failed with `Cannot find module
+  '../index.js'`. The loader and its `index.d.ts` are now committed and shipped.
+  No API or behavior changes.
+
 ## [0.1.0] — 2026-07-24
 
 Initial release. A safe, Rust-powered protobuf **wire codec** (Level 1).

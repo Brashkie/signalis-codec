@@ -105,15 +105,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      - name: Move binaries into place
+      - name: Move binaries into the package root
         shell: bash
         run: |
+          # Fat-package model: every platform's .node ships inside the main
+          # package. The committed NAPI loader (index.js) selects the correct
+          # one at runtime, so no separate per-platform packages are needed.
           find artifacts -name '*.node' -exec cp {} . \;
+          echo "Bundled native binaries:"
           ls -la *.node
-      - name: Prepare npm platform packages
-        run: npx napi prepublish -t npm --skip-gh-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Sanity-check the loader is present
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.js || { echo "::error::index.js (NAPI loader) missing — it must be committed"; exit 1; }
+          echo "Loader present: index.js"
       - name: Publish
         run: npm publish --access public --provenance
         env:

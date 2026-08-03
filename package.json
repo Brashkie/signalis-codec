@@ -1,6 +1,6 @@
 {
   "name": "@brashkie/signalis-codec",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Safe, Rust-powered protobuf wire codec (Level 1) with bounds-checking and depth limiting. Schema-agnostic foundation for @brashkie/waproto.",
   "author": "Brashkie (Hepein Oficial)",
   "license": "Apache-2.0",
@@ -39,23 +39,18 @@
     "index.js",
     "index.d.ts",
     "*.node",
-    "npm",
     "README.md",
     "LICENSE"
   ],
   "napi": {
     "name": "signalis-codec",
     "triples": {
-      "defaults": true,
+      "defaults": false,
       "additional": [
+        "x86_64-unknown-linux-gnu",
+        "x86_64-pc-windows-msvc",
         "aarch64-apple-darwin",
-        "aarch64-linux-android",
-        "aarch64-unknown-linux-gnu",
-        "aarch64-unknown-linux-musl",
-        "aarch64-pc-windows-msvc",
-        "armv7-unknown-linux-gnueabihf",
-        "x86_64-unknown-linux-musl",
-        "x86_64-unknown-freebsd"
+        "x86_64-apple-darwin"
       ]
     }
   },
@@ -66,7 +61,6 @@
     "build": "npm run build:native && npm run build:ts",
     "build:debug": "npm run build:native:debug && npm run build:ts",
     "artifacts": "napi artifacts",
-    "prepublishOnly": "napi prepublish -t npm",
     "typecheck": "tsc --noEmit",
     "lint": "biome check src __tests__",
     "lint:fix": "biome check --write src __tests__",

@@ -3,9 +3,17 @@ dist/
 coverage/
 *.tsbuildinfo
 
-# Rust / NAPI build artifacts
+# Rust build artifacts
 target/
+
+# Platform binaries: never commit the compiled .node files (they're published
+# as separate per-platform npm packages by `napi prepublish`).
 *.node
-index.js
-index.d.ts
+
+# The napi platform-package scratch dir.
 npm/
+
+# NOTE: index.js and index.d.ts (the NAPI loader + raw type declarations) are
+# NOT ignored — they MUST be committed. The loader selects the correct platform
+# binary at runtime and is required in the published package. Regenerate them
+# with `npm run build:native`.
