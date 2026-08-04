@@ -49,6 +49,20 @@ npm install @brashkie/signalis-codec
 
 Prebuilt native binaries ship for common platforms; no toolchain needed to use it.
 
+### Supported platforms
+
+Prebuilt binaries are bundled for:
+
+| OS | Architecture |
+|----|--------------|
+| Linux | x64 (glibc) |
+| macOS | x64 (Intel) · arm64 (Apple Silicon) |
+| Windows | x64 |
+
+On any other platform, install fails to find a binary. If you need one that
+isn't listed, open an issue — adding a target is a one-line change to the build
+matrix. (To build from source you need a Rust toolchain and Node 18+.)
+
 ## Quick start
 
 ```ts

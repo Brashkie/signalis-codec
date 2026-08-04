@@ -46,6 +46,21 @@ npm install @brashkie/signalis-codec
 
 Trae binarios nativos precompilados para las plataformas comunes.
 
+### Plataformas soportadas
+
+Los binarios precompilados vienen para:
+
+| SO | Arquitectura |
+|----|--------------|
+| Linux | x64 (glibc) |
+| macOS | x64 (Intel) · arm64 (Apple Silicon) |
+| Windows | x64 |
+
+En cualquier otra plataforma, la instalación no encuentra binario. Si necesitás
+una que no está en la lista, abrí un issue — agregar un target es un cambio de
+una línea en la matriz de build. (Para compilar desde el código necesitás Rust y
+Node 18+.)
+
 ## Inicio rápido
 
 ```ts

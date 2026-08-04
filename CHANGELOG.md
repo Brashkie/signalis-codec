@@ -5,6 +5,19 @@ All notable changes to `@brashkie/signalis-codec` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] — 2026-08-03
+
+### Fixed
+
+- **`exports` now allows reading `package.json`.** Tools and consumers that do
+  `require('@brashkie/signalis-codec/package.json')` previously hit
+  `ERR_PACKAGE_PATH_NOT_EXPORTED`. Added the `"./package.json"` subpath export.
+
+### Docs
+
+- Documented the set of platforms with prebuilt binaries (Linux x64, macOS
+  x64/arm64, Windows x64) and how to request additional targets.
+
 ## [0.1.1] — 2026-08-03
 
 ### Fixed

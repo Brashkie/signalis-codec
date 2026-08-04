@@ -1,6 +1,6 @@
 {
   "name": "@brashkie/signalis-codec",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Safe, Rust-powered protobuf wire codec (Level 1) with bounds-checking and depth limiting. Schema-agnostic foundation for @brashkie/waproto.",
   "author": "Brashkie (Hepein Oficial)",
   "license": "Apache-2.0",
@@ -32,7 +32,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
