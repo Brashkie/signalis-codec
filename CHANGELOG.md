@@ -5,6 +5,40 @@ All notable changes to `@brashkie/signalis-codec` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-08-04
+
+### Added
+
+- **Logical-type helpers** — a symmetric set of pure-TypeScript functions that
+  interpret raw wire values as protobuf logical types and back. The wire codec
+  stays schema-agnostic (a varint is just a varint); these helpers apply the
+  meaning the schema implies.
+  - **Reading (`as*`)**: `asInt32`, `asInt64`, `asUint32`, `asUint64`,
+    `asSint32`, `asSint64`, `asBool`, `asEnum`, `asFloat`, `asFixed32`,
+    `asSfixed32`, `asDouble`, `asFixed64`, `asSfixed64`, `asString`, `asBytes`.
+  - **Writing (`from*`)**: the mirror set, **range-checked** — out-of-range
+    input throws `RangeError` instead of silently truncating.
+- Correct handling of the tricky cases: negative `int32` (encoded as a 10-byte
+  varint), ZigZag for `sint*`, and IEEE-754 for `float`/`double`. All verified
+  against the reference protobuf implementation.
+
+### Changed
+
+- **Packaging aligned with `@brashkie/signalis-core`** (lean model). The main
+  package no longer bundles every platform's `.node`; instead each platform's
+  binary ships as its own optional sub-package (`@brashkie/signalis-codec-<platform>`),
+  so users download only the binary for their platform. The NAPI loader
+  (`index.js`) is generated fresh during the release and is no longer committed.
+  This replaces the interim fat-package model used in 0.1.x.
+
+### Notes
+
+- The core Rust wire codec is unchanged. Type interpretation is cheap and lives
+  in TypeScript, keeping the native boundary small and the engine focused on the
+  binary format.
+- `packed repeated` is intentionally **not** included yet; it's planned for a
+  later release.
+
 ## [0.1.2] — 2026-08-03
 
 ### Fixed

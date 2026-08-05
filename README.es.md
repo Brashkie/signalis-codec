@@ -88,6 +88,37 @@ const tree = decodeTree(buf, 100); // maxDepth = 100 (default)
 decodeTree(evilBuf, 100); // → Error: nesting depth exceeded limit of 100
 ```
 
+## Helpers de tipos lógicos
+
+El wire codec es agnóstico al schema: un varint es solo un varint. El tipo
+*lógico* (int32 vs sint32 vs bool vs enum…) vive en el schema, así que decodificar
+devuelve valores crudos y un conjunto de helpers los interpreta. Los `as*`
+(lectura) y `from*` (escritura) son perfectamente simétricos, y cada `from*`
+valida el rango — pasar un valor fuera de rango lanza `RangeError` en vez de
+truncar en silencio.
+
+```ts
+import {
+  encodeFields, decodeFields, WireType,
+  asUint32, asString, fromUint32, fromString,
+} from '@brashkie/signalis-codec';
+
+// Para un schema como:  message Device { uint32 id = 1; string name = 2; }
+
+const buf = encodeFields([
+  { fieldNumber: 1, wireType: WireType.Varint, varint: fromUint32(150) },
+  { fieldNumber: 2, wireType: WireType.Bytes,  bytes:  fromString('phone') },
+]);
+
+const f = decodeFields(buf);
+const device = { id: asUint32(f[0].varint), name: asString(f[1].bytes) };
+// → { id: 150, name: 'phone' }
+```
+
+Los casos difíciles (int32 negativo como varint de 10 bytes, ZigZag para `sint*`,
+IEEE-754 para `float`/`double`) están manejados y verificados contra el protobuf
+de referencia.
+
 ## Qué es (y qué no)
 
 - ✅ Un **wire codec** — la capa a nivel de bytes de Protobuf.

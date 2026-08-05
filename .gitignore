@@ -1,19 +1,174 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Rust
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Build artifacts
+/target/
+**/target/
+**/*.rs.bk
+
+# Cargo.lock is committed for binaries, NOT for libraries.
+# Signalis-core is a library, so we EXCLUDE it.
+# Uncomment if you want reproducible builds for the workspace.
+# Cargo.lock
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Node.js
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Dependencies
 node_modules/
+jspm_packages/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Optional npm cache
+.npm
+.eslintcache
+.stylelintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Build outputs
+# ═══════════════════════════════════════════════════════════════════════════
+
+# TypeScript / tsup builds
 dist/
-coverage/
+build/
+out/
 *.tsbuildinfo
 
-# Rust build artifacts
-target/
+# NAPI-RS auto-generated files (regenerated on every build)
+index.js
+index.d.ts
+index.d.cts
+index.d.mts
 
-# Platform binaries: never commit the compiled .node files (they're published
-# as separate per-platform npm packages by `napi prepublish`).
+# Native binaries (per-platform .node files)
 *.node
 
-# The napi platform-package scratch dir.
-npm/
+# ═══════════════════════════════════════════════════════════════════════════
+# Tests & Coverage
+# ═══════════════════════════════════════════════════════════════════════════
 
-# NOTE: index.js and index.d.ts (the NAPI loader + raw type declarations) are
-# NOT ignored — they MUST be committed. The loader selects the correct platform
-# binary at runtime and is required in the published package. Regenerate them
-# with `npm run build:native`.
+coverage/
+.nyc_output/
+*.lcov
+
+# ═══════════════════════════════════════════════════════════════════════════
+# IDE & Editor
+# ═══════════════════════════════════════════════════════════════════════════
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains (IntelliJ, WebStorm, RustRover, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Operating Systems
+# ═══════════════════════════════════════════════════════════════════════════
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Environment & Secrets
+# ═══════════════════════════════════════════════════════════════════════════
+
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# NPM auth tokens (NEVER commit these!)
+.npmrc
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Temporary files
+# ═══════════════════════════════════════════════════════════════════════════
+
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OS-specific cache / lock files
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Direnv
+.direnv/
+
+# Rustup / sccache
+.rustup/
+.sccache/
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CI / CD artifacts
+# ═══════════════════════════════════════════════════════════════════════════
+
+# GitHub Actions
+.github/workflows/*.local.yml
+
+# Local Husky hooks
+.husky/_
+
+npm/
+# Local Android cross-compile config (per-developer)
+.cargo/config.toml

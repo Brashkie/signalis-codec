@@ -101,6 +101,50 @@ const tree = decodeTree(buf, 100); // maxDepth = 100 (default)
 decodeTree(evilBuf, 100); // → Error: nesting depth exceeded limit of 100
 ```
 
+## Logical-type helpers
+
+The wire codec is schema-agnostic: a varint is just a varint. The *logical* type
+(int32 vs sint32 vs bool vs enum…) lives in the schema, so decoding returns raw
+values and a set of helpers interprets them. The `as*` (read) and `from*` (write)
+helpers are perfectly symmetric, and every `from*` is range-checked — passing an
+out-of-range value throws `RangeError` rather than silently truncating.
+
+```ts
+import {
+  encodeFields, decodeFields, WireType,
+  asUint32, asString, fromUint32, fromString,
+} from '@brashkie/signalis-codec';
+
+// Given a schema like:  message Device { uint32 id = 1; string name = 2; }
+
+// Encode
+const buf = encodeFields([
+  { fieldNumber: 1, wireType: WireType.Varint, varint: fromUint32(150) },
+  { fieldNumber: 2, wireType: WireType.Bytes,  bytes:  fromString('phone') },
+]);
+
+// Decode
+const f = decodeFields(buf);
+const device = {
+  id:   asUint32(f[0].varint),
+  name: asString(f[1].bytes),
+};
+// → { id: 150, name: 'phone' }
+```
+
+Available helpers, grouped by the wire type they read from / write to:
+
+| Wire type | Read (`as*`) | Write (`from*`) |
+|-----------|--------------|-----------------|
+| Varint | `asInt32` `asInt64` `asUint32` `asUint64` `asSint32` `asSint64` `asBool` `asEnum` | mirror `from*` |
+| Fixed32 | `asFloat` `asFixed32` `asSfixed32` | mirror `from*` |
+| Fixed64 | `asDouble` `asFixed64` `asSfixed64` | mirror `from*` |
+| Bytes | `asString` `asBytes` | mirror `from*` |
+
+Negative `int32` (encoded as a full-width varint), ZigZag `sint*`, and IEEE-754
+`float`/`double` are all handled correctly and verified against the reference
+protobuf implementation.
+
 ## API
 
 | Export | Description |

@@ -1,6 +1,6 @@
 {
   "name": "@brashkie/signalis-codec",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Safe, Rust-powered protobuf wire codec (Level 1) with bounds-checking and depth limiting. Schema-agnostic foundation for @brashkie/waproto.",
   "author": "Brashkie (Hepein Oficial)",
   "license": "Apache-2.0",
@@ -39,9 +39,10 @@
     "dist",
     "index.js",
     "index.d.ts",
-    "*.node",
     "README.md",
-    "LICENSE"
+    "README.es.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "napi": {
     "name": "signalis-codec",
@@ -56,12 +57,13 @@
     }
   },
   "scripts": {
+    "preartifacts": "node scripts/create-npm-dirs.js",
+    "artifacts": "napi artifacts",
     "build:native": "napi build --platform --release --cargo-cwd crates/codec-node --js index.js --dts index.d.ts",
     "build:native:debug": "napi build --platform --cargo-cwd crates/codec-node --js index.js --dts index.d.ts",
     "build:ts": "tsup",
     "build": "npm run build:native && npm run build:ts",
     "build:debug": "npm run build:native:debug && npm run build:ts",
-    "artifacts": "napi artifacts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check src __tests__",
     "lint:fix": "biome check --write src __tests__",
@@ -82,5 +84,11 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "optionalDependencies": {
+    "@brashkie/signalis-codec-linux-x64-gnu": "0.2.0",
+    "@brashkie/signalis-codec-win32-x64-msvc": "0.2.0",
+    "@brashkie/signalis-codec-darwin-x64": "0.2.0",
+    "@brashkie/signalis-codec-darwin-arm64": "0.2.0"
   }
 }

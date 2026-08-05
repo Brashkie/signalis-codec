@@ -13,10 +13,16 @@ foundation for the Signalis ecosystem and `@brashkie/waproto`.
 - [x] ZigZag for sint32/sint64
 - [x] NAPI bindings + TypeScript wrapper (BigInt for 64-bit)
 
-## 🔴 Phase 2 — Ergonomics
+## ✅ Phase 2a — Logical-type helpers (v0.2.0)
 
-- [ ] Streaming decode (decode fields lazily without materializing a Vec)
+- [x] `as*` readers and `from*` writers for every protobuf logical type
+- [x] Range-checked `from*` (throws instead of truncating)
+- [x] Correct negative-int32, ZigZag, and IEEE-754 handling, verified vs protobuf
+
+## 🔴 Phase 2b — Remaining ergonomics
+
 - [ ] `packed` repeated helpers (decode a Bytes field as a varint/fixed array)
+- [ ] Streaming decode (decode fields lazily without materializing a Vec)
 - [ ] Zero-copy string/bytes views where safe
 - [ ] Benchmarks vs protobufjs (throughput + memory)
 

@@ -155,3 +155,41 @@ export function zigzagDecode(value: bigint): bigint {
 export function fieldKey(fieldNumber: number, wireType: WireType): number {
   return (fieldNumber << 3) | wireType;
 }
+
+// ─── Logical-type helpers (as* read / from* write) ───────────────────────────
+export {
+  // Reading (raw wire value → logical value)
+  asInt32,
+  asInt64,
+  asUint32,
+  asUint64,
+  asSint32,
+  asSint64,
+  asBool,
+  asEnum,
+  asFloat,
+  asFixed32,
+  asSfixed32,
+  asDouble,
+  asFixed64,
+  asSfixed64,
+  asString,
+  asBytes,
+  // Writing (logical value → raw wire value, range-checked)
+  fromInt32,
+  fromInt64,
+  fromUint32,
+  fromUint64,
+  fromSint32,
+  fromSint64,
+  fromBool,
+  fromEnum,
+  fromFloat,
+  fromFixed32,
+  fromSfixed32,
+  fromDouble,
+  fromFixed64,
+  fromSfixed64,
+  fromString,
+  fromBytes,
+} from './helpers';
