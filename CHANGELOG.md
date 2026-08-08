@@ -5,6 +5,31 @@ All notable changes to `@brashkie/signalis-codec` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-08-05
+
+### Added
+
+- **Packed repeated support** — `[packed=true]` fields, split cleanly across the
+  two layers the codec already uses:
+  - **Rust engine**: low-level `packVarints` / `unpackVarints`,
+    `packFixed32` / `unpackFixed32`, `packFixed64` / `unpackFixed64` — the
+    physical packing, where the per-element work belongs.
+  - **TypeScript**: a typed `encodePacked*` / `decodePacked*` pair for every
+    packable protobuf type (`int32`, `int64`, `uint32`, `uint64`, `sint32`,
+    `sint64`, `bool`, `enum`, `float`, `double`, `fixed32`, `sfixed32`,
+    `fixed64`, `sfixed64`), layering the logical-type helpers over the Rust
+    engine.
+- Misaligned fixed32/fixed64 payloads are rejected; truncated varint payloads
+  error rather than silently dropping data.
+- Verified against the protobuf specification's canonical packed example
+  (`[3, 270, 86942]` → `03 8E02 9EA705`).
+
+### Notes
+
+- This completes the Level-1 wire format: the codec can now read and write every
+  protobuf wire form, including packed repeated. Schema-level concerns (`.proto`
+  parsing, maps, oneof) remain out of scope by design.
+
 ## [0.2.0] — 2026-08-04
 
 ### Added

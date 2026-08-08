@@ -12,26 +12,7 @@
  * @packageDocumentation
  */
 
-import { createRequire } from 'node:module';
-
-/**
- * The shape of the native NAPI addon (produced by `napi build` at the package
- * root). We declare it here so the type-declaration build never depends on the
- * generated `index.d.ts` existing — the addon is loaded at runtime instead.
- */
-interface NativeBinding {
-  decodeFieldsJs(buf: Buffer): DecodedField[];
-  encodeFieldsJs(fields: FieldInput[]): Buffer;
-  decodeTreeJs(buf: Buffer, maxDepth: number): TreeNode[];
-  zigzagEncode(value: bigint): bigint;
-  zigzagDecode(value: bigint): bigint;
-}
-
-// `createRequire(import.meta.url)` resolves the addon relative to the built
-// file (dist/index.* → ../index.js at the package root) and works in both the
-// CommonJS and ESM outputs. esbuild polyfills `import.meta.url` for the CJS
-// build, so a single source serves both formats.
-const native = createRequire(import.meta.url)('../index.js') as NativeBinding;
+import { native } from './native';
 
 /**
  * Protobuf wire types.
@@ -156,6 +137,43 @@ export function fieldKey(fieldNumber: number, wireType: WireType): number {
   return (fieldNumber << 3) | wireType;
 }
 
+// ─── Packed repeated: low-level (raw values, Rust-powered) ───────────────────
+
+/**
+ * Pack raw varint values into a contiguous payload (no field tags).
+ *
+ * This is the physical packing primitive; the raw `bigint` values are written
+ * as-is. For typed helpers (int32, sint32, …) see the `encodePacked*` family.
+ */
+export function packVarints(values: bigint[]): Buffer {
+  return native.packVarintsJs(values);
+}
+
+/** Unpack a varint payload into its raw values. */
+export function unpackVarints(buf: Buffer | Uint8Array): bigint[] {
+  return native.unpackVarintsJs(Buffer.isBuffer(buf) ? buf : Buffer.from(buf));
+}
+
+/** Pack raw fixed32 values (little-endian, 4 bytes each). */
+export function packFixed32(values: number[]): Buffer {
+  return native.packFixed32Js(values);
+}
+
+/** Unpack a fixed32 payload (length must be a multiple of 4). */
+export function unpackFixed32(buf: Buffer | Uint8Array): number[] {
+  return native.unpackFixed32Js(Buffer.isBuffer(buf) ? buf : Buffer.from(buf));
+}
+
+/** Pack raw fixed64 values (little-endian, 8 bytes each). */
+export function packFixed64(values: bigint[]): Buffer {
+  return native.packFixed64Js(values);
+}
+
+/** Unpack a fixed64 payload (length must be a multiple of 8). */
+export function unpackFixed64(buf: Buffer | Uint8Array): bigint[] {
+  return native.unpackFixed64Js(Buffer.isBuffer(buf) ? buf : Buffer.from(buf));
+}
+
 // ─── Logical-type helpers (as* read / from* write) ───────────────────────────
 export {
   // Reading (raw wire value → logical value)
@@ -193,3 +211,35 @@ export {
   fromString,
   fromBytes,
 } from './helpers';
+
+// ─── Packed repeated: typed (encodePacked* / decodePacked*) ──────────────────
+export {
+  encodePackedInt32,
+  decodePackedInt32,
+  encodePackedInt64,
+  decodePackedInt64,
+  encodePackedUint32,
+  decodePackedUint32,
+  encodePackedUint64,
+  decodePackedUint64,
+  encodePackedSint32,
+  decodePackedSint32,
+  encodePackedSint64,
+  decodePackedSint64,
+  encodePackedBool,
+  decodePackedBool,
+  encodePackedEnum,
+  decodePackedEnum,
+  encodePackedFloat,
+  decodePackedFloat,
+  encodePackedFixed32,
+  decodePackedFixed32,
+  encodePackedSfixed32,
+  decodePackedSfixed32,
+  encodePackedDouble,
+  decodePackedDouble,
+  encodePackedFixed64,
+  decodePackedFixed64,
+  encodePackedSfixed64,
+  decodePackedSfixed64,
+} from './packed';

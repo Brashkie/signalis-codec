@@ -19,9 +19,14 @@ foundation for the Signalis ecosystem and `@brashkie/waproto`.
 - [x] Range-checked `from*` (throws instead of truncating)
 - [x] Correct negative-int32, ZigZag, and IEEE-754 handling, verified vs protobuf
 
-## 🔴 Phase 2b — Remaining ergonomics
+## ✅ Phase 2b — Packed repeated (v0.3.0)
 
-- [ ] `packed` repeated helpers (decode a Bytes field as a varint/fixed array)
+- [x] Rust engine: pack/unpack for varints, fixed32, fixed64
+- [x] Typed `encodePacked*` / `decodePacked*` for all 14 packable types
+- [x] Misaligned/truncated payloads rejected; verified vs the spec example
+
+## 🔴 Phase 2c — Remaining ergonomics
+
 - [ ] Streaming decode (decode fields lazily without materializing a Vec)
 - [ ] Zero-copy string/bytes views where safe
 - [ ] Benchmarks vs protobufjs (throughput + memory)

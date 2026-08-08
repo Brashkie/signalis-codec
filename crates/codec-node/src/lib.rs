@@ -248,3 +248,54 @@ fn bigint_to_i64(b: BigInt) -> Result<i64> {
     }
     Ok(value)
 }
+
+// ─── Packed repeated ─────────────────────────────────────────────────────────
+
+/// Pack raw varint values into a contiguous payload (no field tags).
+#[napi]
+pub fn pack_varints_js(values: Vec<BigInt>) -> Result<Buffer> {
+    let raw: Vec<u64> = values
+        .into_iter()
+        .map(bigint_to_u64)
+        .collect::<Result<_>>()?;
+    Ok(Buffer::from(codec_core::pack_varints(&raw)))
+}
+
+/// Unpack a varint payload into its raw values.
+#[napi]
+pub fn unpack_varints_js(buf: Buffer) -> Result<Vec<BigInt>> {
+    let data: &[u8] = &buf;
+    let values = codec_core::unpack_varints(data).map_err(to_napi_err)?;
+    Ok(values.into_iter().map(bigint_from_u64).collect())
+}
+
+/// Pack raw fixed32 values (little-endian, 4 bytes each).
+#[napi]
+pub fn pack_fixed32_js(values: Vec<u32>) -> Buffer {
+    Buffer::from(codec_core::pack_fixed32(&values))
+}
+
+/// Unpack a fixed32 payload (length must be a multiple of 4).
+#[napi]
+pub fn unpack_fixed32_js(buf: Buffer) -> Result<Vec<u32>> {
+    let data: &[u8] = &buf;
+    codec_core::unpack_fixed32(data).map_err(to_napi_err)
+}
+
+/// Pack raw fixed64 values (little-endian, 8 bytes each).
+#[napi]
+pub fn pack_fixed64_js(values: Vec<BigInt>) -> Result<Buffer> {
+    let raw: Vec<u64> = values
+        .into_iter()
+        .map(bigint_to_u64)
+        .collect::<Result<_>>()?;
+    Ok(Buffer::from(codec_core::pack_fixed64(&raw)))
+}
+
+/// Unpack a fixed64 payload (length must be a multiple of 8).
+#[napi]
+pub fn unpack_fixed64_js(buf: Buffer) -> Result<Vec<BigInt>> {
+    let data: &[u8] = &buf;
+    let values = codec_core::unpack_fixed64(data).map_err(to_napi_err)?;
+    Ok(values.into_iter().map(bigint_from_u64).collect())
+}

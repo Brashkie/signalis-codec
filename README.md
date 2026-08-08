@@ -145,6 +145,37 @@ Negative `int32` (encoded as a full-width varint), ZigZag `sint*`, and IEEE-754
 `float`/`double` are all handled correctly and verified against the reference
 protobuf implementation.
 
+## Packed repeated fields
+
+A `repeated` field marked `[packed=true]` is encoded as a single
+length-delimited field whose payload is the concatenated element values (no
+per-element tags). The physical packing runs in the Rust engine; a typed helper
+per protobuf type layers the logical conversion on top.
+
+```ts
+import {
+  encodeFields, decodeFields, WireType,
+  encodePackedSint32, decodePackedSint32,
+} from '@brashkie/signalis-codec';
+
+// message Path { repeated sint32 deltas = 4 [packed=true]; }
+
+// Encode: build the packed payload, then wrap it in a length-delimited field.
+const payload = encodePackedSint32([-10, 20, -30]);
+const buf = encodeFields([{ fieldNumber: 4, wireType: WireType.Bytes, bytes: payload }]);
+
+// Decode: read the field, then unpack its bytes.
+const field = decodeFields(buf)[0];
+const deltas = decodePackedSint32(field.bytes!); // [-10, 20, -30]
+```
+
+There's an `encodePacked*` / `decodePacked*` pair for every packable type:
+`int32`, `int64`, `uint32`, `uint64`, `sint32`, `sint64`, `bool`, `enum`,
+`float`, `double`, `fixed32`, `sfixed32`, `fixed64`, `sfixed64`. For raw packing
+without type interpretation, the low-level `packVarints` / `unpackVarints`,
+`packFixed32` / `unpackFixed32`, and `packFixed64` / `unpackFixed64` are exported
+too.
+
 ## API
 
 | Export | Description |
