@@ -1,6 +1,6 @@
 {
   "name": "@brashkie/signalis-codec",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Safe, Rust-powered protobuf wire codec (Level 1) with bounds-checking and depth limiting. Schema-agnostic foundation for @brashkie/waproto.",
   "author": "Brashkie (Hepein Oficial)",
   "license": "Apache-2.0",
@@ -71,13 +71,17 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:rust": "cargo test --workspace --exclude codec-node"
+    "test:rust": "cargo test --workspace --exclude codec-node",
+    "bench": "node benchmarks/vs-protobufjs.mjs",
+    "bench:rust": "cargo bench -p codec-bench"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
     "@napi-rs/cli": "^2.18.0",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^3.0.0",
+    "protobufjs": "^7.4.0",
+    "tinybench": "^3.0.0",
     "tsup": "^8.0.0",
     "typescript": "^6.0.3",
     "vitest": "^3.0.0"
@@ -86,9 +90,9 @@
     "node": ">=18"
   },
   "optionalDependencies": {
-    "@brashkie/signalis-codec-linux-x64-gnu": "0.3.0",
-    "@brashkie/signalis-codec-win32-x64-msvc": "0.3.0",
-    "@brashkie/signalis-codec-darwin-x64": "0.3.0",
-    "@brashkie/signalis-codec-darwin-arm64": "0.3.0"
+    "@brashkie/signalis-codec-linux-x64-gnu": "0.3.1",
+    "@brashkie/signalis-codec-win32-x64-msvc": "0.3.1",
+    "@brashkie/signalis-codec-darwin-x64": "0.3.1",
+    "@brashkie/signalis-codec-darwin-arm64": "0.3.1"
   }
 }

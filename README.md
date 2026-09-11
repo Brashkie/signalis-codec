@@ -213,6 +213,22 @@ src/                TypeScript wrapper with the typed public API
 The Rust core is exercised by its own `cargo test` suite; the TypeScript layer by
 Vitest against the real native addon.
 
+## Benchmarks
+
+Two benchmark suites live in the repo (both dev-only, not shipped):
+
+```
+npm run bench:rust    # Criterion micro-benchmarks of the Rust core
+npm run bench         # head-to-head vs protobuf.js (run after `npm run build`)
+```
+
+The `bench` script encodes and decodes the same messages with both
+`signalis-codec` and `protobuf.js`, first asserting they produce **byte-identical**
+output, then reporting ops/sec. The native engine's advantage is largest on
+varint-heavy and larger payloads (the parsing this codec is built for); for very
+small messages the NAPI boundary crossing means a tuned pure-JS decoder can be
+competitive. Run them on your own hardware — numbers vary by CPU.
+
 ## Security
 
 See [SECURITY.md](./SECURITY.md). In short: terminate on decode errors, and pick

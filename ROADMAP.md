@@ -25,11 +25,11 @@ foundation for the Signalis ecosystem and `@brashkie/waproto`.
 - [x] Typed `encodePacked*` / `decodePacked*` for all 14 packable types
 - [x] Misaligned/truncated payloads rejected; verified vs the spec example
 
-## 🔴 Phase 2c — Remaining ergonomics
+## 🟡 Phase 2c — Remaining ergonomics
 
 - [ ] Streaming decode (decode fields lazily without materializing a Vec)
 - [ ] Zero-copy string/bytes views where safe
-- [ ] Benchmarks vs protobufjs (throughput + memory)
+- [x] Benchmarks vs protobufjs (throughput + memory) *(v0.3.1 — Criterion micro-benches for the Rust core + a `benchmarks/vs-protobufjs.mjs` head-to-head; run with `npm run bench` / `npm run bench:rust`)*
 
 ## 🔴 Phase 3 — Schema awareness (Level 2, optional)
 

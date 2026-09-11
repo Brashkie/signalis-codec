@@ -5,7 +5,28 @@ All notable changes to `@brashkie/signalis-codec` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0] — 2026-08-05
+## [0.3.1] — 2026-09-09
+
+### Added
+
+- **Benchmarks** (Phase 2c) — no API changes, dev-only tooling:
+  - **Rust Criterion micro-benchmarks** (`crates/codec-bench`, not published) for
+    the core engine: encoding (small message + varint-heavy), decoding
+    (`decode_fields` flat + `decode_tree` nested), and packed pack/unpack. Run
+    with `npm run bench:rust` (`cargo bench -p codec-bench`).
+  - **Head-to-head vs protobuf.js** (`benchmarks/vs-protobufjs.mjs`) — encode +
+    decode of the same messages with both libraries, including a varint-heavy
+    payload. The script first asserts both libraries produce byte-identical
+    output, then reports ops/sec. Run with `npm run bench` (after `npm run build`).
+- `protobufjs` and `tinybench` added as devDependencies (benchmark-only).
+
+### Notes
+
+- Benchmarks are not shipped in the npm package (`benchmarks/` and
+  `crates/codec-bench` are outside the `files` allow-list and the published
+  crates). This is purely additive; the wire codec's behavior is unchanged.
+
+
 
 ### Added
 

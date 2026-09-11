@@ -125,6 +125,23 @@ de referencia.
 - ❌ No es un **compilador de schemas** — no lee archivos `.proto` ni genera
   clases tipadas. Eso es una capa superior (ej: `@brashkie/waproto`).
 
+## Benchmarks
+
+Hay dos suites de benchmarks en el repo (ambas solo de desarrollo, no se publican):
+
+```
+npm run bench:rust    # micro-benchmarks Criterion del core Rust
+npm run bench         # head-to-head vs protobuf.js (correr tras `npm run build`)
+```
+
+El script `bench` codifica y decodifica los mismos mensajes con `signalis-codec`
+y con `protobuf.js`: primero verifica que produzcan bytes **idénticos**, y luego
+reporta ops/seg. La ventaja del motor nativo es mayor en payloads con muchos
+varints y en mensajes grandes (el parsing para el que está pensado este codec);
+en mensajes muy chicos, el cruce del borde NAPI hace que un decoder puro-JS
+optimizado sea competitivo. Correlos en tu propia máquina — los números varían
+según la CPU.
+
 ## Licencia
 
 Apache-2.0 © Brashkie (Hepein Oficial)
