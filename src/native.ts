@@ -15,6 +15,7 @@ export interface NativeBinding {
   decodeFieldsJs(buf: Buffer): DecodedField[];
   encodeFieldsJs(fields: FieldInput[]): Buffer;
   decodeTreeJs(buf: Buffer, maxDepth: number): TreeNode[];
+  indexFieldsJs(buf: Buffer): Uint32Array;
   zigzagEncode(value: bigint): bigint;
   zigzagDecode(value: bigint): bigint;
   packVarintsJs(values: bigint[]): Buffer;

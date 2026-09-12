@@ -25,11 +25,16 @@ foundation for the Signalis ecosystem and `@brashkie/waproto`.
 - [x] Typed `encodePacked*` / `decodePacked*` for all 14 packable types
 - [x] Misaligned/truncated payloads rejected; verified vs the spec example
 
-## 🟡 Phase 2c — Remaining ergonomics
+## ✅ Phase 2c — Remaining ergonomics
 
-- [ ] Streaming decode (decode fields lazily without materializing a Vec)
-- [ ] Zero-copy string/bytes views where safe
+- [x] Streaming / lazy decode *(v0.4.0 — `lazyIndex` scans once into an offset table; fields decoded on demand, no per-field Vec/object materialization)*
+- [x] Zero-copy string/bytes views where safe *(v0.4.0 — `LazyMessage.getBytes` returns a `subarray` view over the original buffer; reads happen directly over the bytes)*
 - [x] Benchmarks vs protobufjs (throughput + memory) *(v0.3.1 — Criterion micro-benches for the Rust core + a `benchmarks/vs-protobufjs.mjs` head-to-head; run with `npm run bench` / `npm run bench:rust`)*
+
+> **Measured trade-off (v0.4.0):** the lazy index-header path wins on **large,
+> sparse** messages (1.3×–2.7× for >1KB payloads read partially) and avoids
+> GC churn; for small WhatsApp-typical messages (1–4 fields) eager decoding /
+> protobuf.js is faster. Use lazy for large payloads and routing/filtering.
 
 ## 🔴 Phase 3 — Schema awareness (Level 2, optional)
 

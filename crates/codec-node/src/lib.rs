@@ -7,8 +7,8 @@
 #![deny(clippy::all)]
 
 use codec_core::{
-    decode_fields, decode_tree, zigzag_decode as zz_decode, zigzag_encode as zz_encode, Encoder,
-    FieldValue, Node,
+    decode_fields, decode_tree, index_fields, zigzag_decode as zz_decode,
+    zigzag_encode as zz_encode, Encoder, FieldValue, Node,
 };
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -96,6 +96,28 @@ pub fn decode_fields_js(buf: Buffer) -> Result<Vec<DecodedField>> {
             },
         })
         .collect())
+}
+
+/// Index a protobuf buffer in a single pass, returning a flat table.
+///
+/// The returned `Uint32Array` holds 4 values per field —
+/// `[fieldNumber, wireType, offset, length]` repeated — so the whole index
+/// crosses the FFI boundary **once**, as a single typed array, with no
+/// per-field JS object allocation. The caller reads only the field values it
+/// needs directly from the original buffer (see the `LazyMessage` wrapper).
+#[napi]
+pub fn index_fields_js(buf: Buffer) -> Result<Uint32Array> {
+    let entries =
+        index_fields(&buf).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
+
+    let mut flat: Vec<u32> = Vec::with_capacity(entries.len() * 4);
+    for e in entries {
+        flat.push(e.field_number);
+        flat.push(u32::from(e.wire_type));
+        flat.push(e.offset);
+        flat.push(e.length);
+    }
+    Ok(Uint32Array::new(flat))
 }
 
 /// Encode a list of fields into a protobuf buffer.

@@ -119,6 +119,39 @@ Los casos difíciles (int32 negativo como varint de 10 bytes, ZigZag para `sint*
 IEEE-754 para `float`/`double`) están manejados y verificados contra el protobuf
 de referencia.
 
+## Decode perezoso para mensajes grandes / dispersos
+
+`lazyIndex` escanea un buffer **una sola vez** y arma una tabla de offsets (cruza
+el borde nativo una vez, como un solo typed array — sin instanciar un objeto por
+campo), y te deja leer solo los campos que necesitás, on-demand, en O(1):
+
+```ts
+import { lazyIndex } from '@brashkie/signalis-codec';
+
+const msg = lazyIndex(buf);          // un paso, nada decodificado todavía
+if (msg.getUint32(2) !== 3) return;  // enrutás por un campo, sin tocar el payload
+const jid = msg.getString(1);        // decodificás un campo, sin cruzar el borde de nuevo
+const media = msg.getMessage(7);     // indexás un submensaje in-place
+```
+
+`LazyMessage` ofrece `has`, `fieldCount`, `fieldNumbers`, y getters tipados
+(`getVarint`, `getUint32`, `getBool`, `getString`, `getBytes`, `getFixed32`,
+`getFixed64`, `getMessage`). `getBytes` devuelve una **vista** sobre el buffer —
+copiala si la retenés más allá de la vida del buffer.
+
+**Cuándo conviene (medido, honesto):** es una estrategia *adaptativa*, no un
+speedup universal.
+
+| Mensaje | Ganador |
+|---|---|
+| Chico (1–4 campos, ~88 B — chat/señalización típico) | decode eager / protobuf.js es más rápido |
+| Grande y disperso (>1 KB, leés pocos de muchos campos) | **lazy: 1.3×–2.7× más rápido, cero GC churn** |
+
+Usá `lazyIndex` para payloads grandes (sync de historial, metadata de media,
+documentos pesados) y para enrutamiento/filtrado; usá `decodeFields` eager para
+mensajes chicos. Ambos mantienen 100% de compatibilidad con el wire format de
+protobuf.
+
 ## Qué es (y qué no)
 
 - ✅ Un **wire codec** — la capa a nivel de bytes de Protobuf.

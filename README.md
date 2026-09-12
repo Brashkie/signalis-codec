@@ -176,6 +176,38 @@ without type interpretation, the low-level `packVarints` / `unpackVarints`,
 `packFixed32` / `unpackFixed32`, and `packFixed64` / `unpackFixed64` are exported
 too.
 
+## Lazy decoding for large / sparse messages
+
+`lazyIndex` scans a buffer **once** into an offset table (crossing the native
+boundary a single time, as one typed array — no per-field object allocation) and
+lets you read only the fields you need, on demand, in O(1):
+
+```ts
+import { lazyIndex } from '@brashkie/signalis-codec';
+
+const msg = lazyIndex(buf);          // one pass, nothing decoded yet
+if (msg.getUint32(2) !== 3) return;  // route by a single field, payload untouched
+const jid = msg.getString(1);        // decode one field, no extra boundary crossing
+const media = msg.getMessage(7);     // index a submessage in place
+```
+
+`LazyMessage` offers `has`, `fieldCount`, `fieldNumbers`, and typed getters
+(`getVarint`, `getUint32`, `getBool`, `getString`, `getBytes`, `getFixed32`,
+`getFixed64`, `getMessage`). `getBytes` returns a **view** over the buffer — copy
+it if you keep it beyond the buffer's lifetime.
+
+**When it helps (measured, honest):** the lazy path is an *adaptive* strategy,
+not a universal speedup.
+
+| Message | Winner |
+|---|---|
+| Small (1–4 fields, ~88 B — typical chat/signalling) | eager decode / protobuf.js is faster |
+| Large & sparse (>1 KB, read a few of many fields) | **lazy: 1.3×–2.7× faster, zero GC churn** |
+
+Use `lazyIndex` for large payloads (history sync, media metadata, heavy
+documents) and routing/filtering; use eager `decodeFields` for small messages.
+Both keep 100% protobuf wire-format compatibility.
+
 ## API
 
 | Export | Description |

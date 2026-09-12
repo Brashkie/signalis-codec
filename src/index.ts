@@ -243,3 +243,6 @@ export {
   encodePackedSfixed64,
   decodePackedSfixed64,
 } from './packed';
+
+// ─── Lazy / index-header decoding (v0.4.0) ───────────────────────────────────
+export { lazyIndex, LazyMessage } from './lazy';
