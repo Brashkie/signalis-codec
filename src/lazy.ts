@@ -13,8 +13,8 @@
  * For reading a whole message into an object, `decodeFields` is still available.
  */
 
-import { native } from './native';
 import { asBool, asString, asUint32 } from './helpers';
+import { native } from './native';
 
 /** Wire type discriminants (mirror of the native constants). */
 const WIRE_VARINT = 0;

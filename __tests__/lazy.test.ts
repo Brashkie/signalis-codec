@@ -1,19 +1,23 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
-  lazyIndex,
-  encodeFields,
   WireType,
-  fromUint32,
-  fromString,
+  encodeFields,
   fromBool,
+  fromString,
+  fromUint32,
+  lazyIndex,
 } from '../src';
 
 describe('lazyIndex / LazyMessage', () => {
   const buf = encodeFields([
     { fieldNumber: 1, wireType: WireType.Varint, varint: fromUint32(1789098857) },
     { fieldNumber: 2, wireType: WireType.Varint, varint: fromBool(true) },
-    { fieldNumber: 3, wireType: WireType.Bytes, bytes: fromString('5493511234567@s.whatsapp.net') },
+    {
+      fieldNumber: 3,
+      wireType: WireType.Bytes,
+      bytes: fromString('5493511234567@s.whatsapp.net'),
+    },
     { fieldNumber: 4, wireType: WireType.Bytes, bytes: fromString('Brashkie') },
     { fieldNumber: 5, wireType: WireType.Fixed32, fixed32: 0xdeadbeef },
   ]);
