@@ -12,16 +12,16 @@
 
 pub mod decoder;
 pub mod encoder;
-pub mod indexer;
 pub mod error;
+pub mod indexer;
 pub mod packed;
 pub mod reader;
 pub mod wire;
 
 pub use decoder::{decode_fields, decode_tree, Field, FieldValue, Node};
 pub use encoder::Encoder;
-pub use indexer::{index_fields, IndexEntry};
 pub use error::DecodeError;
+pub use indexer::{index_fields, IndexEntry};
 pub use packed::{
     pack_fixed32, pack_fixed64, pack_varints, unpack_fixed32, unpack_fixed64, unpack_varints,
 };

@@ -107,8 +107,7 @@ pub fn decode_fields_js(buf: Buffer) -> Result<Vec<DecodedField>> {
 /// needs directly from the original buffer (see the `LazyMessage` wrapper).
 #[napi]
 pub fn index_fields_js(buf: Buffer) -> Result<Uint32Array> {
-    let entries =
-        index_fields(&buf).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
+    let entries = index_fields(&buf).map_err(|e| Error::new(Status::InvalidArg, e.to_string()))?;
 
     let mut flat: Vec<u32> = Vec::with_capacity(entries.len() * 4);
     for e in entries {

@@ -119,13 +119,19 @@ mod tests {
         assert_eq!(idx[0].field_number, 1);
         assert_eq!(idx[0].wire_type, 0);
         assert_eq!(idx[0].length, 2);
-        assert_eq!(&buf[idx[0].offset as usize..(idx[0].offset + idx[0].length) as usize], &[0x96, 0x01]);
+        assert_eq!(
+            &buf[idx[0].offset as usize..(idx[0].offset + idx[0].length) as usize],
+            &[0x96, 0x01]
+        );
 
         // Field 2: string "hello" → the 5 payload bytes (after the length prefix).
         assert_eq!(idx[1].field_number, 2);
         assert_eq!(idx[1].wire_type, 2);
         assert_eq!(idx[1].length, 5);
-        assert_eq!(&buf[idx[1].offset as usize..(idx[1].offset + idx[1].length) as usize], b"hello");
+        assert_eq!(
+            &buf[idx[1].offset as usize..(idx[1].offset + idx[1].length) as usize],
+            b"hello"
+        );
 
         // Field 3: fixed32 → 4 bytes.
         assert_eq!(idx[2].field_number, 3);
