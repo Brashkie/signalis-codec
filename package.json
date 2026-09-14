@@ -80,7 +80,7 @@
     "@napi-rs/cli": "^2.18.0",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^3.0.0",
-    "protobufjs": "^7.4.0",
+    "protobufjs": "^8.8.0",
     "tinybench": "^3.0.0",
     "tsup": "^8.0.0",
     "typescript": "^6.0.3",
