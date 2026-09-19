@@ -125,6 +125,68 @@ export class LazyMessage {
     return out;
   }
 
+  // ─── Repeated fields ───────────────────────────────────────────────────────
+  // Repeated string / bytes / submessage fields are always unpacked (only scalar
+  // numeric types may be packed), so each occurrence is a separate index entry.
+  // These readers collect every occurrence, in wire order.
+
+  /** Number of occurrences of `fieldNumber` (0 if absent). */
+  count(fieldNumber: number): number {
+    let n = 0;
+    for (let i = 0; i < this.index.length; i += STRIDE) {
+      if (this.index[i] === fieldNumber) n++;
+    }
+    return n;
+  }
+
+  /**
+   * All occurrences of a repeated varint field as raw bigints, in wire order.
+   *
+   * Only unpacked entries are collected. For a *packed* repeated numeric field
+   * (a single length-delimited blob), read it with {@link getBytes} and the
+   * `unpackVarints` helper instead.
+   */
+  getAllVarints(fieldNumber: number): bigint[] {
+    const out: bigint[] = [];
+    for (let i = 0; i < this.index.length; i += STRIDE) {
+      if (this.index[i] === fieldNumber && this.index[i + 1] === WIRE_VARINT) {
+        out.push(this.readVarintAt(this.index[i + 2]!, this.index[i + 3]!));
+      }
+    }
+    return out;
+  }
+
+  /** All occurrences of a repeated varint field as uint32 numbers. */
+  getAllUint32(fieldNumber: number): number[] {
+    return this.getAllVarints(fieldNumber).map(asUint32);
+  }
+
+  /**
+   * All occurrences of a repeated length-delimited field as byte views over the
+   * buffer (copy them if retained past the buffer's lifetime).
+   */
+  getAllBytes(fieldNumber: number): Buffer[] {
+    const out: Buffer[] = [];
+    for (let i = 0; i < this.index.length; i += STRIDE) {
+      if (this.index[i] === fieldNumber && this.index[i + 1] === WIRE_BYTES) {
+        const offset = this.index[i + 2]!;
+        const length = this.index[i + 3]!;
+        out.push(this.buf.subarray(offset, offset + length));
+      }
+    }
+    return out;
+  }
+
+  /** All occurrences of a repeated string field, in wire order. */
+  getAllStrings(fieldNumber: number): string[] {
+    return this.getAllBytes(fieldNumber).map(asString);
+  }
+
+  /** All occurrences of a repeated submessage field, each lazily indexed. */
+  getAllMessages(fieldNumber: number): LazyMessage[] {
+    return this.getAllBytes(fieldNumber).map((b) => lazyIndex(b));
+  }
+
   /** Return the base offset into the index array for `fieldNumber`, or -1. */
   private slotOf(fieldNumber: number): number {
     for (let i = 0; i < this.index.length; i += STRIDE) {

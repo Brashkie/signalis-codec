@@ -208,6 +208,8 @@ Use `lazyIndex` for large payloads (history sync, media metadata, heavy
 documents) and routing/filtering; use eager `decodeFields` for small messages.
 Both keep 100% protobuf wire-format compatibility.
 
+
+**Repeated fields (v0.5.0):** `getAllStrings`, `getAllBytes`, `getAllVarints`, `getAllUint32`, `getAllMessages`, and `count` return every occurrence of a field (protobuf `repeated`). Single-value getters still return the first.
 ## API
 
 | Export | Description |

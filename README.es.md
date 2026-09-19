@@ -152,6 +152,8 @@ documentos pesados) y para enrutamiento/filtrado; usá `decodeFields` eager para
 mensajes chicos. Ambos mantienen 100% de compatibilidad con el wire format de
 protobuf.
 
+
+**Campos repetidos (v0.5.0):** `getAllStrings`, `getAllBytes`, `getAllVarints`, `getAllUint32`, `getAllMessages` y `count` devuelven todas las ocurrencias de un campo (`repeated` de protobuf). Los getters de valor único siguen devolviendo el primero.
 ## Qué es (y qué no)
 
 - ✅ Un **wire codec** — la capa a nivel de bytes de Protobuf.

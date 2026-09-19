@@ -5,6 +5,26 @@ All notable changes to `@brashkie/signalis-codec` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] — 2026-09-15
+
+### Added — Repeated-field reading on `LazyMessage` (no breaking changes)
+
+New readers that return **every** occurrence of a field, not just the first —
+needed for protobuf `repeated` fields (e.g. WhatsApp's `mentionedJid`, labels).
+Pure TypeScript over the existing index (no Rust / binding changes):
+
+- `getAllStrings(fieldNumber)` → `string[]`
+- `getAllBytes(fieldNumber)` → `Buffer[]` (views over the buffer)
+- `getAllVarints(fieldNumber)` → `bigint[]`
+- `getAllUint32(fieldNumber)` → `number[]`
+- `getAllMessages(fieldNumber)` → `LazyMessage[]` (each lazily indexed)
+- `count(fieldNumber)` → number of occurrences
+
+The single-value getters (`getString`, `getVarint`, …) are unchanged and still
+return the first occurrence. Repeated string/bytes/submessage fields are always
+unpacked, so each occurrence is a separate entry; for *packed* repeated numerics
+(a single length-delimited blob), use `getBytes` + the `unpackVarints` helper.
+
 ## [0.4.0] — 2026-09-11
 
 ### Added — Lazy index-header decoding (`lazyIndex` / `LazyMessage`)
