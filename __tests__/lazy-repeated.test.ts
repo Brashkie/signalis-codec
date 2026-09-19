@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { encodeFields, WireType, fromString, fromUint32, lazyIndex } from '../src';
+import { WireType, encodeFields, fromString, fromUint32, lazyIndex } from '../src';
 
 describe('LazyMessage — repeated fields', () => {
   it('getAllStrings reads every occurrence of a repeated string', () => {
@@ -34,8 +34,12 @@ describe('LazyMessage — repeated fields', () => {
   });
 
   it('getAllMessages reads repeated submessages, each lazily', () => {
-    const sub1 = encodeFields([{ fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('uno') }]);
-    const sub2 = encodeFields([{ fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('dos') }]);
+    const sub1 = encodeFields([
+      { fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('uno') },
+    ]);
+    const sub2 = encodeFields([
+      { fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('dos') },
+    ]);
     const buf = encodeFields([
       { fieldNumber: 5, wireType: WireType.Bytes, bytes: sub1 },
       { fieldNumber: 5, wireType: WireType.Bytes, bytes: sub2 },
@@ -59,7 +63,9 @@ describe('LazyMessage — repeated fields', () => {
   });
 
   it('returns empty arrays / zero count for absent fields', () => {
-    const buf = encodeFields([{ fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('x') }]);
+    const buf = encodeFields([
+      { fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('x') },
+    ]);
     const m = lazyIndex(buf);
     expect(m.getAllStrings(99)).toEqual([]);
     expect(m.getAllVarints(99)).toEqual([]);
@@ -68,7 +74,9 @@ describe('LazyMessage — repeated fields', () => {
   });
 
   it('a single occurrence yields a one-element array', () => {
-    const buf = encodeFields([{ fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('solo') }]);
+    const buf = encodeFields([
+      { fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('solo') },
+    ]);
     const m = lazyIndex(buf);
     expect(m.getAllStrings(1)).toEqual(['solo']);
     expect(m.count(1)).toBe(1);
@@ -77,22 +85,30 @@ describe('LazyMessage — repeated fields', () => {
 
 describe('LazyMessage — fixed32 / fixed64 (coverage for existing getters)', () => {
   it('getFixed32 reads a fixed32 field', () => {
-    const buf = encodeFields([{ fieldNumber: 3, wireType: WireType.Fixed32, fixed32: 0xdeadbeef }]);
+    const buf = encodeFields([
+      { fieldNumber: 3, wireType: WireType.Fixed32, fixed32: 0xdeadbeef },
+    ]);
     const m = lazyIndex(buf);
     expect(m.getFixed32(3)).toBe(0xdeadbeef);
     expect(m.getFixed32(99)).toBeNull();
     // wire-type mismatch → null
-    const s = encodeFields([{ fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('x') }]);
+    const s = encodeFields([
+      { fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('x') },
+    ]);
     expect(lazyIndex(s).getFixed32(1)).toBeNull();
   });
 
   it('getFixed64 reads a fixed64 field', () => {
-    const buf = encodeFields([{ fieldNumber: 4, wireType: WireType.Fixed64, varint: 1234567890123n }]);
+    const buf = encodeFields([
+      { fieldNumber: 4, wireType: WireType.Fixed64, varint: 1234567890123n },
+    ]);
     const m = lazyIndex(buf);
     expect(m.getFixed64(4)).toBe(1234567890123n);
     expect(m.getFixed64(99)).toBeNull();
     // wire-type mismatch → null
-    const s = encodeFields([{ fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('x') }]);
+    const s = encodeFields([
+      { fieldNumber: 1, wireType: WireType.Bytes, bytes: fromString('x') },
+    ]);
     expect(lazyIndex(s).getFixed64(1)).toBeNull();
   });
 });
